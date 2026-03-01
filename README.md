@@ -1,4 +1,4 @@
-# Pamac-classic
+﻿# Pamac-classic
 
 A graphical package manager for pacman
 
@@ -13,6 +13,10 @@ A graphical package manager for pacman
 	* Multiple words search capability
 	* Enable/Disable check updates from AUR
 	* Build and update AUR packages
+	 
+	 
+![Screenshot_2026-03-01_20-27-37.png](Screenshot_2026-03-01_20-27-37.png "")
+
 
 # How to build
 
