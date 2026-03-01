@@ -1841,8 +1841,13 @@ private void cb_question (void *ctx, Alpm.Question.Data data) {
 			data.corrupted_remove = 1;
 			break;
 		case Alpm.Question.Type.IMPORT_KEY:
-			// Auto-import all keys (can't check revoked status due to API change)
-			data.import_key_import = 1;
+			if (data.import_key_fingerprint != null && data.import_key_fingerprint != "") {
+				data.import_key_import = 1;
+			} else if (data.import_key_uid != null && data.import_key_uid != "") {
+				data.import_key_import = 1;
+			} else {
+				data.import_key_import = 0;
+			}
 			break;
 		default:
 			data.any_answer = 0;

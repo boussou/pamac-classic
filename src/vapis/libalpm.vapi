@@ -1209,8 +1209,10 @@ namespace Alpm {
 			public Type type;
 			/** Answer: whether or not to import key. */
 			public int import;
-			/** The key to import - removed due to API change */
-			// public Signature.PGPKey key;
+			/** UID of the key to import. */
+			public unowned string uid;
+			/** Fingerprint the key to import. */
+			public unowned string fingerprint;
 		}
 
 		/** This is an union passed to the callback, that allows the frontend to know
@@ -1265,8 +1267,10 @@ namespace Alpm {
 			// ImportKey import_key;
 			[CCode (cname = "import_key.import")]
 			public int import_key_import;
-			// [CCode (cname = "import_key.key")]
-			// public Signature.PGPKey import_key_key;
+			[CCode (cname = "import_key.uid")]
+			public unowned string import_key_uid;
+			[CCode (cname = "import_key.fingerprint")]
+			public unowned string import_key_fingerprint;
 		}
 	}
 

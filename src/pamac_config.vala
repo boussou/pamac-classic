@@ -22,6 +22,18 @@ namespace Pamac {
 	public class Config {
 		HashTable<string,string> _environment_variables;
 
+		Settings? get_settings_if_installed (string schema_id) {
+			SettingsSchemaSource? source = SettingsSchemaSource.get_default ();
+			if (source == null) {
+				return null;
+			}
+			SettingsSchema? schema = source.lookup (schema_id, true);
+			if (schema == null) {
+				return null;
+			}
+			return new Settings.full (schema, null, null);
+		}
+
 		public bool recurse { get; private set; }
 		public uint64 refresh_period { get; private set; }
 		public bool no_update_hide_icon { get; private set; }
@@ -71,31 +83,52 @@ namespace Pamac {
 			if (variable != null) {
 				_environment_variables.insert ("no_proxy", variable);
 			}
-			// set default option
+			// set default options
+			recurse = false;
 			refresh_period = 6;
+			no_update_hide_icon = false;
+			keep_num_pkgs = 3;
+			rm_only_uninstalled = false;
+			terminal_background = "#000000";
+			terminal_foreground = "#FFFFFF";
+			terminal_font = "Monospace 10";
+			update_files_db = false;
+#if DISABLE_AUR
+#else
+			enable_aur = false;
+			search_aur = false;
+			check_aur_updates = false;
+			aur_build_dir = "/var/tmp";
+			aur_keep_pkgs = false;
+			aur_move_dir = "";
+#endif
 			reload ();
 		}
 
 		public void reload () {
-			var settings = new Settings ("org.pamac.main");
-			recurse = settings.get_boolean ("remove-unrequired-deps");
-			refresh_period = settings.get_uint64 ("refresh-period");
-			no_update_hide_icon = settings.get_boolean ("no-update-hide-icon");
-			keep_num_pkgs = settings.get_uint64 ("keep-num-packages");
-			rm_only_uninstalled = settings.get_boolean ("only-rm-uninstalled");
-			terminal_background = settings.get_string ("background-color");
-			terminal_foreground = settings.get_string ("foreground-color");
-			terminal_font = settings.get_string ("terminal-font");
-			update_files_db = settings.get_boolean ("update-files-db");
+			Settings? settings = get_settings_if_installed ("org.pamac.main");
+			if (settings != null) {
+				recurse = settings.get_boolean ("remove-unrequired-deps");
+				refresh_period = settings.get_uint64 ("refresh-period");
+				no_update_hide_icon = settings.get_boolean ("no-update-hide-icon");
+				keep_num_pkgs = settings.get_uint64 ("keep-num-packages");
+				rm_only_uninstalled = settings.get_boolean ("only-rm-uninstalled");
+				terminal_background = settings.get_string ("background-color");
+				terminal_foreground = settings.get_string ("foreground-color");
+				terminal_font = settings.get_string ("terminal-font");
+				update_files_db = settings.get_boolean ("update-files-db");
+			}
 #if DISABLE_AUR
 #else
-			settings = new Settings ("org.pamac.aur");
-			enable_aur = settings.get_boolean ("enable-aur");
-			search_aur = settings.get_boolean ("search-in-aur");
-			check_aur_updates = settings.get_boolean ("check-aur-updates");
-			aur_build_dir = settings.get_string ("build-directory");
-			aur_keep_pkgs = settings.get_boolean("aur-keep-pkgs");
-			aur_move_dir = settings.get_string("move-directory");
+			settings = get_settings_if_installed ("org.pamac.aur");
+			if (settings != null) {
+				enable_aur = settings.get_boolean ("enable-aur");
+				search_aur = settings.get_boolean ("search-in-aur");
+				check_aur_updates = settings.get_boolean ("check-aur-updates");
+				aur_build_dir = settings.get_string ("build-directory");
+				aur_keep_pkgs = settings.get_boolean("aur-keep-pkgs");
+				aur_move_dir = settings.get_string("move-directory");
+			}
 #endif
 		}
 	}
